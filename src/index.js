@@ -16,7 +16,7 @@ const MAX = 40;
 let currPage = 1;
 let maxPages = 0;
 let inputSearch = '';
-let lightbox;
+let lightbox = null;
 
 const searchParams = () =>
   new URLSearchParams({
