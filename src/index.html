@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Page title</title>
     <link rel="stylesheet" href="./sass/index.scss" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <script type="module" src="./index.js"></script>
   </head>
   <body>
@@ -15,13 +22,15 @@
         autocomplete="off"
         placeholder="Search images..."
       />
-      <button type="submit">Search</button>
+      <button class="search-form__btn-search" type="submit">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
     </form>
 
     <div class="gallery">
       <!-- Obraz karty -->
     </div>
-
+    <div id="scroll-sentinel"></div>
     <button type="button" class="load-more">Load more</button>
   </body>
 </html>
