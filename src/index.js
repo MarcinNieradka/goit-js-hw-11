@@ -2,13 +2,13 @@ import Notiflix from 'notiflix';
 import axios from 'axios';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-import MoveTo from 'moveto';
+// import MoveTo from 'moveto';
 
 const searchEl = document.getElementById('search-form');
 const galleryEl = document.querySelector('.gallery');
 const loadMoreBtn = document.querySelector('.load-more');
 // const scrollSentinel = document.getElementById('scroll-sentinel');
-const moveTo = new MoveTo({ duration: 2000, container: window });
+// const moveTo = new MoveTo({ duration: 2000, container: window });
 
 const API_KEY = '35576958-fcdd23cb6f9ed7de7f6f808c6';
 const API_URL = 'https://pixabay.com/api/?';
@@ -93,7 +93,7 @@ const renderPhotos = data => {
       //   console.log(element.largeImageURL);
     });
     lightbox = new SimpleLightbox('.gallery a');
-    moveTo.move(loadMoreBtn); //-------------- SOLUTION WITH LOAD MORE BTN
+    // moveTo.move(loadMoreBtn); //-------------- SOLUTION WITH LOAD MORE BTN
   } catch (error) {
     console.log(error);
   }
