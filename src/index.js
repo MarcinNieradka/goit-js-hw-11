@@ -3,6 +3,7 @@ import axios from 'axios';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 // import MoveTo from 'moveto';
+import debounce from 'lodash.debounce';
 
 const searchEl = document.getElementById('search-form');
 const galleryEl = document.querySelector('.gallery');
@@ -17,6 +18,7 @@ let currPage = 1;
 let maxPages = 0;
 let inputSearch = '';
 let lightbox = null;
+const DEBOUNCE_DELAY = 500;
 
 const searchParams = () =>
   new URLSearchParams({
@@ -99,13 +101,26 @@ const renderPhotos = data => {
   }
 };
 
-searchEl.addEventListener('submit', async e => {
-  e.preventDefault();
+// searchEl.addEventListener('submit', async e => {
+//   e.preventDefault();
+//   loadMoreBtn.style.display = 'none';
+//   currPage = 1;
+//   galleryEl.innerHTML = '';
+//   inputSearch = e.currentTarget.elements.searchQuery.value;
+//   console.log(inputSearch);
+//   try {
+//     const data = await fetchPhotos();
+//     Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+//     renderPhotos(data);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });
+
+const debounceFunction = debounce(async e => {
   loadMoreBtn.style.display = 'none';
   currPage = 1;
   galleryEl.innerHTML = '';
-  inputSearch = e.currentTarget.elements.searchQuery.value;
-  console.log(inputSearch);
   try {
     const data = await fetchPhotos();
     Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
@@ -113,6 +128,12 @@ searchEl.addEventListener('submit', async e => {
   } catch (error) {
     console.log(error);
   }
+}, DEBOUNCE_DELAY);
+
+searchEl.addEventListener('submit', e => {
+  e.preventDefault();
+  inputSearch = e.currentTarget.elements.searchQuery.value;
+  debounceFunction();
 });
 
 ////////// SOLUTION WITH LOAD MORE BTN ----- START ////////////
@@ -135,6 +156,52 @@ loadMoreBtn.addEventListener('click', async e => {
 });
 
 ////////// SOLUTION WITH LOAD MORE BTN ----- END ////////////
+
+//////////////////////////////////////////////////////////////////////////////////
+
+//////////// DEBOUNCE - START //////////////////////////
+
+// const debounceFunction = async e => {
+//   // e.preventDefault();
+//   loadMoreBtn.style.display = 'none';
+//   currPage = 1;
+//   galleryEl.innerHTML = '';
+//   // inputSearch = 'skull';
+//   // console.log(inputSearch);
+//   try {
+//     const data = await fetchPhotos();
+//     Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+//     renderPhotos(data);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
+// searchEl.addEventListener(
+//   'submit',
+//   debounce(e => {
+//     e.preventDefault();
+//     inputSearch = e.currentTarget.elements.searchQuery.value;
+//     console.log(inputSearch);
+//     debounceFunction();
+//   }),
+//   1000
+// );
+
+// searchEl.addEventListener(
+//   'input',
+//   debounce(e => {
+//     e.preventDefault();
+//     inputSearch = e.target.elements.searchQuery.value;
+//     console.log(e);
+//     debounceFunction();
+//   }),
+//   1000
+// );
+
+//////////// DEBOUNCE - END //////////////////////////
+
+////////////////////  INFINITE SCROLL - START ////////////////////////
 
 // const isScrollAtBottom = () => {
 //   const bodyEl = document.body;
