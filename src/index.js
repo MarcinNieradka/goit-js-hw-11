@@ -88,6 +88,7 @@ const options = {
   rootMargin: '0px',
   threshold: 0.1,
 };
+
 const observer = new IntersectionObserver(async entries => {
   if (entries[0].isIntersecting && currPage < maxPages) {
     currPage++;
@@ -109,6 +110,7 @@ const observer = new IntersectionObserver(async entries => {
     );
   }
 }, options);
+
 observer.observe(observerDiv);
 
 ///////////////////////////// OBSERVER - END //////////////////////////
