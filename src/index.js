@@ -7,8 +7,8 @@ import debounce from 'lodash.debounce';
 
 const searchEl = document.getElementById('search-form');
 const galleryEl = document.querySelector('.gallery');
-const loadMoreBtn = document.querySelector('.load-more');
-// const scrollSentinel = document.getElementById('scroll-sentinel');
+// const loadMoreBtn = document.querySelector('.load-more');
+const observerDiv = document.getElementById('observer-div');
 // const moveTo = new MoveTo({ duration: 2000, container: window });
 
 const API_KEY = '35576958-fcdd23cb6f9ed7de7f6f808c6';
@@ -31,13 +31,93 @@ const searchParams = () =>
     per_page: MAX,
   });
 
-loadMoreBtn.style.display = 'none';
+// loadMoreBtn.style.display = 'none';
+observerDiv.style.visibility = 'hidden';
+
+////////////////////// OBSERVER - START //////////////////////////
+// const observer = new IntersectionObserver(
+//   async (entries, observer) => {
+//     const entry = entries[0];
+//     if (entry.intersectionRatio > 0) {
+//       currPage++;
+//       if (currPage > maxPages) {
+//         observer.disconnect();
+//         return;
+//       }
+//       try {
+//         const data = await fetchMorePhotos();
+//         renderPhotos(data);
+//       } catch (error) {
+//         console.log(error);
+//       }
+//     }
+//   },
+//   { threshold: 0.5 }
+// );
+
+// observer.observe(observerDiv);
+
+////////////////////// ------ v2 below
+
+// const options = {
+//   rootMargin: '0px',
+//   threshold: 1.0,
+// };
+// const observer = new IntersectionObserver(async entries => {
+//   if (entries[0].isIntersecting && currPage < maxPages) {
+//     currPage++;
+//     lightbox.destroy();
+//     try {
+//       const data = await fetchMorePhotos();
+//       renderPhotos(data);
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   } else if (entries[0].isIntersecting && currPage >= maxPages) {
+//     Notiflix.Notify.failure(
+//       "We're sorry, but you've reached the end of search results."
+//     );
+//   }
+// }, options);
+// observer.observe(observerDiv);
+
+/////////////////////// ---------- v3 below
+
+let wasFirstFech = false;
+const options = {
+  rootMargin: '0px',
+  threshold: 0.1,
+};
+const observer = new IntersectionObserver(async entries => {
+  if (entries[0].isIntersecting && currPage < maxPages) {
+    currPage++;
+    lightbox.destroy();
+    try {
+      const data = await fetchMorePhotos();
+      renderPhotos(data);
+      wasFirstFech = true;
+    } catch (error) {
+      console.log(error);
+    }
+  } else if (
+    entries[0].isIntersecting &&
+    currPage >= maxPages &&
+    wasFirstFech
+  ) {
+    Notiflix.Notify.failure(
+      "We're sorry, but you've reached the end of search results."
+    );
+  }
+}, options);
+observer.observe(observerDiv);
+
+///////////////////////////// OBSERVER - END //////////////////////////
 
 const createImg = element => {
   //   console.log(element);
-  loadMoreBtn.style.display = 'initial'; //-------------- SOLUTION WITH LOAD MORE BTN
-  loadMoreBtn.innerHTML = 'Load more'; //-------------- SOLUTION WITH LOAD MORE BTN
-  loadMoreBtn.disabled = false; //-------------- SOLUTION WITH LOAD MORE BTN
+  // loadMoreBtn.style.display = 'initial'; //-------------- SOLUTION WITH LOAD MORE BTN
+  // loadMoreBtn.innerHTML = 'Load more'; //-------------- SOLUTION WITH LOAD MORE BTN
+  // loadMoreBtn.disabled = false; //-------------- SOLUTION WITH LOAD MORE BTN
   const galleryItem = document.createElement('div');
   galleryItem.classList.add('gallery__item-container');
   galleryItem.innerHTML = `
@@ -118,7 +198,7 @@ const renderPhotos = data => {
 // });
 
 const debounceFunction = debounce(async e => {
-  loadMoreBtn.style.display = 'none';
+  // loadMoreBtn.style.display = 'none';
   currPage = 1;
   galleryEl.innerHTML = '';
   try {
@@ -128,6 +208,7 @@ const debounceFunction = debounce(async e => {
   } catch (error) {
     console.log(error);
   }
+  observerDiv.style.visibility = 'visible';
 }, DEBOUNCE_DELAY);
 
 searchEl.addEventListener('submit', e => {
@@ -138,22 +219,22 @@ searchEl.addEventListener('submit', e => {
 
 ////////// SOLUTION WITH LOAD MORE BTN ----- START ////////////
 
-loadMoreBtn.addEventListener('click', async e => {
-  currPage++;
-  if (currPage > maxPages) {
-    loadMoreBtn.innerHTML = 'No more pics';
-    loadMoreBtn.disabled = true;
-  } else {
-    lightbox.destroy();
-  }
-  try {
-    const data = await fetchMorePhotos();
-    renderPhotos(data);
-  } catch (error) {
-    console.log(error);
-  }
-  console.log(currPage);
-});
+// loadMoreBtn.addEventListener('click', async e => {
+//   currPage++;
+//   if (currPage > maxPages) {
+//     loadMoreBtn.innerHTML = 'No more pics';
+//     loadMoreBtn.disabled = true;
+//   } else {
+//     lightbox.destroy();
+//   }
+//   try {
+//     const data = await fetchMorePhotos();
+//     renderPhotos(data);
+//   } catch (error) {
+//     console.log(error);
+//   }
+//   console.log(currPage);
+// });
 
 ////////// SOLUTION WITH LOAD MORE BTN ----- END ////////////
 
@@ -200,32 +281,3 @@ loadMoreBtn.addEventListener('click', async e => {
 // );
 
 //////////// DEBOUNCE - END //////////////////////////
-
-////////////////////  INFINITE SCROLL - START ////////////////////////
-
-// const isScrollAtBottom = () => {
-//   const bodyEl = document.body;
-//   const htmlEl = document.documentElement;
-//   const scrollTop = Math.max(bodyEl.scrollTop, htmlEl.scrollTop);
-//   const windowHeight = window.innerHeight;
-//   const docHeight = Math.max(bodyEl.scrollHeight, htmlEl.scrollHeight);
-
-//   return scrollTop >= docHeight - windowHeight - 100;
-// };
-
-// window.addEventListener('scroll', async () => {
-//   if (isScrollAtBottom()) {
-//     currPage++;
-//     if (currPage > maxPages) {
-//       return;
-//     } else {
-//       lightbox.destroy();
-//     }
-//     try {
-//       const data = await fetchMorePhotos();
-//       renderPhotos(data);
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   }
-// });
